@@ -343,3 +343,46 @@ print('The VIN is', car.VIN)
 The mileage is 0
 The VIN is ABC123
 
+#1.12
+#create a function that will decorate a class with a method that issues alerts whenever the 'mileage' attribute is read.
+#def object_counter(class_): – this line defines a decorating function that accepts one parameter 'class_' (note the underscore)
+def object_counter(class_):
+    #the decorator makes a copy of the reference to the __getattribute__ special method. This method is responsible for returning the attribute values. 
+    #The reference to this original method will be used in a modified method;
+    class_.__getattr__orig = class_.__getattribute__
+    #
+    def new_getattr(self, name):
+         #if name == 'mileage': – in case some code asks for the 'mileage' attribute, the next line will be executed;
+        if name == 'mileage':
+            #a simple alert is issued;
+          print('We noticed that the mileage attribute was read')
+        #This ends the 'new_getattr' function definition
+        return class_.__getattr__orig(self, name)
+    #now the 'new_getattr' is defined, so it can now be referenced as the new '__getattribute__' method by a decorated class  
+    class_.__getattribute__ = new_getattr
+    #it is a decorated class.
+    return class_
+
+#decorate the Car class:
+@object_counter
+class Car:
+    def __init__(self, VIN):
+        self.mileage = 0
+        self.VIN = VIN
+
+car = Car('ABC123')
+print('The mileage is', car.mileage)
+print('The VIN is', car.VIN)
+
+>>
+We noticed that the mileage attribute was read
+The mileage is 0
+The VIN is ABC123
+
+#1.13
+#Decorators – summary
+#A decorator is a very powerful and useful tool in Python, because it allows programmers to modify the behavior of a function, method, or class.
+#Decorators allow us to wrap another callable object in order to extend its behavior.
+#Decorators rely heavily on closures and *args and **kwargs.
+#Interesting note:
+#the idea of decorators was described in two documents – PEP 318 and PEP 3129.
